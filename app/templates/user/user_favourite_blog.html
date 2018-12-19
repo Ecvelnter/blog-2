@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block title %}{{ user.username }}{% endblock %}
+
+{% block app_content %}
+    <div class="row">
+        <div class="col-sm-8">
+            {% include 'blog/_blogs.html' %}
+        </div>
+        <div class="col-sm-4 sidebar">
+            {% include 'blog/_sidebar.html' %}
+        </div>
+    </div>
+    <nav aria-label="...">
+        <ul class="pager">
+            <li class="previous{% if not pre_url %}"disabled{% endif %}>
+                <a href="{{ pre_url or '#' }}">
+                    <span aria-hidden="true">&larr;</span> Newer blogs
+                </a>
+            </li>
+            <li class="next{% if not next_url %} disabled{% endif %}">
+                <a href="{{ next_url or '#' }}">
+                    Older blogs <span aria-hidden="true">&rarr;</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+{% endblock %}

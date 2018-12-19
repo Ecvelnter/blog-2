@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block title %}{{ category.name }}{% endblock %}
+
+{% block app_content %}
+    <div class="page-header">
+        <h1>Category: {{ category.name }}</h1>
+        <p class="text-muted">{{ category.blogs|length }} blogs</p>
+    </div>
+    <div class="row">
+        <div class="col-sm-8">
+            {% include "blog/_blogs.html" %}
+        </div>
+        <div class="col-sm-4 sidebar">
+            {% include "blog/_sidebar.html" %}
+        </div>
+    </div>
+{% endblock %}

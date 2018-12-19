@@ -1,0 +1,21 @@
+{% if blogs %}
+    {% for blog in blogs %}
+        <h3 class="text-primary"><a href="{{ url_for('main.show_blog', blog_id=blog.id) }}">{{ blog.title }}</a></h3>
+        <p>
+            {{ blog.body|striptags|truncate }}
+            <small><a href="{{ url_for('main.show_blog', blog_id=blog.id) }}">Read More</a></small>
+        </p>
+        <small>
+            Category: <a
+                href="{{ url_for('.show_category', category_id=blog.category.id) }}">{{ blog.category.name }}</a>
+            <span class="float-right">{{ moment(blog.timestamp).format('LL') }}</span>
+        </small>
+        {% if not loop.last %}
+            <hr>
+        {% endif %}
+    {% endfor %}
+{% else %}
+    <div class="tip">
+        <h5>No blogs yet.</h5>
+    </div>
+{% endif %}

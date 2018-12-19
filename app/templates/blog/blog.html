@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+
+{% block title %}{{ blog.title }}{% endblock %}
+
+{% block app_content %}
+    {{ ckeditor.load_code_theme() }}
+    <div class="page-header">
+        <h1>{{ blog.title }}
+            <span class="float-right"></span>
+        </h1>
+        {% if is_favourited %}
+            <a href="{{ url_for('main.unfavourite_blog', blog_id=blog.id) }}">Dislike</a>
+        {% else %}
+            <a href="{{ url_for('main.favourite_blog', blog_id=blog.id) }}">Like</a>
+        {% endif %}
+    </div>
+    <div class="row">
+        <div class="col-sm-8">
+            {{ blog.body|safe }}
+        </div>
+    </div>
+{% endblock %}
