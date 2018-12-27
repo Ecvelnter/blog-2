@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
-{% import 'bootstrap/wtf.html' as wtf %}
+{% from 'bootstrap/pagination.html' import render_pagination %}
 
 {% block title %}{{ category.name }}{% endblock %}
 
-{% block app_content %}
+{% block content %}
     <div class="page-header">
         <h1>Category: {{ category.name }}</h1>
         <p class="text-muted">{{ category.blogs|length }} blogs</p>
@@ -11,6 +11,9 @@
     <div class="row">
         <div class="col-sm-8">
             {% include "blog/_blogs.html" %}
+            {% if blogs %}
+                <div class="page-footer">{{ render_pagination(pagination) }}</div>
+            {% endif %}
         </div>
         <div class="col-sm-4 sidebar">
             {% include "blog/_sidebar.html" %}

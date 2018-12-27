@@ -5,7 +5,7 @@ from flask_ckeditor import CKEditorField
 from wtforms import StringField,SubmitField,TextAreaField, SelectField
 from wtforms.validators import DataRequired,ValidationError, Length
 
-from app.models import User,Category
+from app.models import Category
 
 
 class MicroblogForm(FlaskForm):

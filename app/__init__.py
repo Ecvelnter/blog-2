@@ -1,82 +1,110 @@
-from flask import Flask,request,current_app
-from config import Config
-from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
-from flask_login import LoginManager
+# -*- coding: utf-8 -*-
 import logging
-from logging.handlers import SMTPHandler,RotatingFileHandler
 import os
-from flask_mail import Mail
-from flask_bootstrap import Bootstrap
-from flask_moment import Moment
-from flask_ckeditor import CKEditor    #引入ckeditor
+from logging.handlers import SMTPHandler, RotatingFileHandler
 
+from flask import Flask, request
+from flask_sqlalchemy import get_debug_queries
 
-db = SQLAlchemy()
-migrate = Migrate()
-login = LoginManager()
-login.login_view = 'auth.login'
-login.login_message = 'Please log in to access this page.'
-mail = Mail()
-bootstrap = Bootstrap()
-moment = Moment()
-ckeditor = CKEditor()
+from app.admin import bp as admin_bp
+from app.auth import bp as auth_bp
+from app.main import bp as main_bp
+from app.errors import bp as errors_bp
+from app.user import bp as user_bp
+from app.extensions import bootstrap, db, login, csrf, ckeditor, mail, moment, toolbar, migrate
+from app.models import User, Blog, Microblog, Category, Link
+from app.config import config
 
+basedir = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
+#basedir = os.path.abspath(os.path.dirname(__file__))
 
-
-def create_app(config_class=Config):
+def create_app(config_name=None):
+    if config_name is None:
+        config_name = os.getenv('Flask_config','development')
     app = Flask(__name__)
-    app.config.from_object(config_class)
-    
-    db.init_app(app)
-    migrate.init_app(app, db)
-    login.init_app(app)
-    mail.init_app(app)
-    bootstrap.init_app(app)
-    moment.init_app(app)
-    ckeditor.init_app(app)    #初始化ckeditor
-    
-    from app.errors import bp as errors_bp
-    app.register_blueprint(errors_bp)
-    
-    from app.auth import bp as auth_bp
-    app.register_blueprint(auth_bp,url_prefix='/auth')
-    
-    from app.main import bp as main_bp
-    app.register_blueprint(main_bp)
-    
-    if not app.debug and not app.testing:
-        if app.config['MAIL_SERVER']:
-            auth = None
-            if app.config['MAIL_USERNAME'] or app.config['MAIL_PASSWORD']:
-                auth = (app.config['MAIL_USERNAME'],app.congfig['MAIL_PASSWORD'])
-            secure = None
-            if app.config['MAIL_USE_TLS']:
-                secure = ()
-            mail_handler = SMTPHandler(
-                mailhost=(app.config['MAIL_SERVER'],app.config['MAIL_PORT']),
-                fromaddr='no-reply@'+app.config['MAIL_SERVER'],
-                toaddrs=app.config['ADMINS'],subject='Blog Failure',
-                credentials=auth,secure=secure)
-            mail_handler.setLevel(logging.ERROR)
-            app.logger.addHandler(mail_handler)
-            
-        if not os.path.exists('logs'):
-            os.mkdir('logs')
-        file_handler = RotatingFileHandler('logs/blog.log',maxBytes=10240,backupCount=10)
-        file_handler.setFormatter(logging.Formatter(
-            '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'))
-        file_handler.setLevel(logging.INFO)
-        app.logger.addHandler(file_handler)
-        app.logger.setLevel(logging.INFO)
-        app.logger.info('Blog startup')
-        
+    app.config.from_object(config[config_name])
+    register_logging(app)
+    register_extensions(app)
+    register_blueprints(app)
+    register_shell_context(app)
+    register_request_handlers(app)
     return app
 
 
+def register_logging(app):
+    class RequestFormatter(logging.Formatter):
 
-from app import models
-'''
-在底部导入appd的各个模块（而不是顶部），是为了避免循环导入问题。
-（上文先定义好app包后，再导入app包）
-'''
+        def format(self, record):
+            record.url = request.url
+            record.remote_addr = request.remote_addr
+            return super(RequestFormatter, self).format(record)
+
+    request_formatter = RequestFormatter(
+        '[%(asctime)s] %(remote_addr)s requested %(url)s\n'
+        '%(levelname)s in %(module)s: %(message)s'
+    )
+
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
+    file_handler = RotatingFileHandler(os.path.join(basedir, 'logs/bluelog.log'),
+                                       maxBytes=10 * 1024 * 1024, backupCount=10)
+    file_handler.setFormatter(formatter)
+    file_handler.setLevel(logging.INFO)
+
+    mail_handler = SMTPHandler(
+        mailhost=app.config['MAIL_SERVER'],
+        fromaddr=app.config['MAIL_USERNAME'],
+        toaddrs=['ADMIN_EMAIL'],
+        subject='Blog Application Error',
+        credentials=(app.config['MAIL_USERNAME'], app.config['MAIL_PASSWORD']))
+    mail_handler.setLevel(logging.ERROR)
+    mail_handler.setFormatter(request_formatter)
+
+    if not app.debug:
+        app.logger.addHandler(mail_handler)
+        app.logger.addHandler(file_handler)
+
+
+def register_extensions(app):
+    bootstrap.init_app(app)
+    db.init_app(app)
+    login.init_app(app)
+    csrf.init_app(app)
+    ckeditor.init_app(app)
+    mail.init_app(app)
+    moment.init_app(app)
+    toolbar.init_app(app)
+    migrate.init_app(app, db)
+
+
+def register_blueprints(app):
+    app.register_blueprint(main_bp)
+    app.register_blueprint(admin_bp, url_prefix='/admin')
+    app.register_blueprint(auth_bp, url_prefix='/auth')
+    app.register_blueprint(user_bp)
+    app.register_blueprint(errors_bp)
+
+def register_shell_context(app):
+    @app.shell_context_processor
+    def make_shell_context():
+        return dict(db=db, User=User, Microblog=Microblog, Blog=Blog, Category=Category, Link=Link)
+
+
+#def register_template_context(app):
+#    @app.context_processor
+#    def make_template_context():
+#        categories = Category.query.filter_by(author=current_user).order_by(Category.id).all()
+#        links = Link.query.filter_by(author=current_user).order_by(Link.id).all()
+#        return dict(categories=categories,links=links)
+
+
+def register_request_handlers(app):
+    @app.after_request
+    def query_profiler(response):
+        for q in get_debug_queries():
+            if q.duration >= app.config['BLOG_SLOW_QUERY_THRESHOLD']:
+                app.logger.warning(
+                    'Slow query: Duration: %fs\n Context: %s\nQuery: %s\n '
+                    % (q.duration, q.context, q.statement)
+                )
+        return response

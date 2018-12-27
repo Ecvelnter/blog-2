@@ -1,24 +1,41 @@
 {% extends 'base.html' %}
-{% import 'bootstrap/wtf.html' as wtf %}
-
 
 {% block title %}{{ blog.title }}{% endblock %}
 
-{% block app_content %}
+{% block content %}
     {{ ckeditor.load_code_theme() }}
     <div class="page-header">
         <h1>{{ blog.title }}
-            <span class="float-right"></span>
+            <small>
+                {% if is_favourited %}
+                   <form class="inline" method="post"
+                     action="{{ url_for('user.unfavourite_blog', blog_id=blog.id, next=request.full_path) }}">
+                       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                       <button type="submit" class="btn btn-warning btn-sm">Dislike</button>
+                   </form>
+                {% else %}
+                   <form class="inline" method="post"
+                     action="{{ url_for('user.favourite_blog', blog_id=blog.id, next=request.full_path) }}">
+                       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                       <button type="submit" class="btn btn-warning btn-sm">Like</button>
+                   </form>
+                {% endif %}
+                {% if is_author %}
+                    <a class="btn btn-info btn-sm" href="{{ url_for('.edit_blog', blog_id=blog.id) }}">Edit</a>
+                {% endif %}
+            </small>
         </h1>
-        {% if is_favourited %}
-            <a href="{{ url_for('main.unfavourite_blog', blog_id=blog.id) }}">Dislike</a>
-        {% else %}
-            <a href="{{ url_for('main.favourite_blog', blog_id=blog.id) }}">Like</a>
-        {% endif %}
+        <small>
+            Category: <a href="{{ url_for('.show_category', category_id=blog.category.id) }}">{{ blog.category.name }}</a><br>
+            Date:{{ moment(blog.timestamp).format('LL') }}
+        </small>
     </div>
     <div class="row">
         <div class="col-sm-8">
             {{ blog.body|safe }}
+        </div>
+        <div class="col-sm-4 sidebar">
+            {% include "blog/_sidebar.html" %}
         </div>
     </div>
 {% endblock %}

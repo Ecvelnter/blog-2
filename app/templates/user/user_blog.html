@@ -1,29 +1,20 @@
 {% extends 'base.html' %}
-{% import 'bootstrap/wtf.html' as wtf %}
+{% from 'bootstrap/pagination.html' import render_pager %}
+
 
 {% block title %}{{ user.username }}{% endblock %}
 
-{% block app_content %}
+{% block content %}
+<h1>{{ user.username }}'blogs</h1>
     <div class="row">
         <div class="col-sm-8">
             {% include 'blog/_blogs.html' %}
+            {% if blogs %}
+            <div class="page-footer">{{ render_pager(pagination) }}</div>
+            {% endif %}
         </div>
         <div class="col-sm-4 sidebar">
             {% include 'blog/_sidebar.html' %}
         </div>
     </div>
-    <nav aria-label="...">
-        <ul class="pager">
-            <li class="previous{% if not pre_url %}"disabled{% endif %}>
-                <a href="{{ pre_url or '#' }}">
-                    <span aria-hidden="true">&larr;</span> Newer blogs
-                </a>
-            </li>
-            <li class="next{% if not next_url %} disabled{% endif %}">
-                <a href="{{ next_url or '#' }}">
-                    Older blogs <span aria-hidden="true">&rarr;</span>
-                </a>
-            </li>
-        </ul>
-    </nav>
 {% endblock %}

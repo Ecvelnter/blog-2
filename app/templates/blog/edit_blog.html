@@ -1,13 +1,13 @@
 {% extends 'base.html' %}
-{% import 'bootstrap/wtf.html' as wtf %}
+{% from 'bootstrap/form.html' import render_form %}
 
 {% block title %}Edit Blog{% endblock %}
 
-{% block app_content %}
+{% block content %}
     <div class="page-header">
         <h1>Edit Blog</h1>
     </div>
-    {{ wtf.quick_form(form) }}
+    {{ render_form(form) }}
 {% endblock %}
 
 {% block scripts %}

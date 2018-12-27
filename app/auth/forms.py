@@ -22,16 +22,19 @@ class RegistrationForm(FlaskForm):
     invitatincode = PasswordField('Invitation Code',validators=[DataRequired()])
     submit = SubmitField('Register')
 
+    @staticmethod
     def validate_username(self,username):
         user = User.query.filter_by(username=username.data).first()
         if user is not None:
             raise ValidationError('Please use a different username.')
 
+    @staticmethod
     def validate_email(self,email):
         user = User.query.filter_by(email=email.data).first()
         if user is not None:
             raise ValidationError('Please use a different email address.')
-            
+
+    @staticmethod
     def validate_invitatincode(self,invitatincode):
         if invitatincode.data != current_app.config['REGISTRATIONCODE']:
             raise ValidationError('Please enter the correct code.')

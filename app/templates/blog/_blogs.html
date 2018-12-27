@@ -7,7 +7,7 @@
         </p>
         <small>
             Category: <a
-                href="{{ url_for('.show_category', category_id=blog.category.id) }}">{{ blog.category.name }}</a>
+                href="{{ url_for('main.show_category', category_id=blog.category.id) }}">{{ blog.category.name }}</a>
             <span class="float-right">{{ moment(blog.timestamp).format('LL') }}</span>
         </small>
         {% if not loop.last %}

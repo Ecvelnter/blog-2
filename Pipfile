@@ -17,6 +17,9 @@ flask-moment = "*"
 bootstrap-flask = "*"
 flask-login = "*"
 flask-migrate = "*"
+flask-debugtoolbar = "*"
+pyjwt = "*"
+pymysql = "*"
 
 [requires]
 python_version = "3.7"

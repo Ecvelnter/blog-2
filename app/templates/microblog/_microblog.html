@@ -1,17 +1,25 @@
-<table class="table table-hover">
-    <tr>
-        <td width="70px">
-            <a href="{{ url_for('main.user', username=microblog.author.username) }}">
-                <img src="{{ microblog.author.avatar(70) }}" />
-            </a>
-        </td>
-        <td>
-            <a href="{{ url_for('main.user',username=microblog.author.username) }}">
-                {{ microblog.author.username}}
-            </a>
-            said {{ moment(microblog.timestamp).fromNow() }}:
-            <br>
-            {{ microblog.body }}
-        </td>
-    </tr>
-</table>
+{% if microblogs %}
+    {% for microblog in microblogs %}
+        <table class="table table-hover">
+           <tr>
+               <td width="70px">
+                   <a href="{{ url_for('user.user', username=microblog.author.username) }}">
+                       <img src="{{ microblog.author.avatar(45) }}" />
+                   </a>
+               </td>
+               <td>
+                   <a href="{{ url_for('user.user',username=microblog.author.username) }}">
+                       {{ microblog.author.username}}
+                   </a>
+                   said {{ moment(microblog.timestamp).fromNow() }}:
+                   <br>
+                   {{ microblog.body }}
+               </td>
+           </tr>
+        </table>
+    {% endfor%}
+{% else %}
+        <div class="tip">
+            <h5>No microblogs yet.</h5>
+        </div>
+{% endif %}
