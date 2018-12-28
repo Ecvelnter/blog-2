@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 import os
-import sys
 
 basedir = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
-#basedir = os.path.abspath(os.path.dirname(__file__))
+
 
 class BaseConfig(object):
     SECRET_KEY = os.getenv('SECRET_KEY', 'dev key')
@@ -16,6 +15,7 @@ class BaseConfig(object):
     CKEDITOR_ENABLE_CSRF = True
     CKEDITOR_ENABLE_CODESNIPPET = True
     CKEDITOR_FILE_UPLOADER = 'main.upload'
+    CKEDITOR_HEIGHT = 800
     UPLOADED_PATH = os.path.join(basedir, 'uploads')
     BLOG_ALLOWED_IMAGE_EXTENSIONS = ['png', 'jpg', 'jpeg', 'gif']
 
@@ -26,13 +26,6 @@ class BaseConfig(object):
     MAIL_PASSWORD = os.getenv('MAIL_PASSWORD')
     MAIL_DEFAULT_SENDER = ('Blog Admin', MAIL_USERNAME)
     ADMINS = ['example@example.com']
-
-    #BLUELOG_EMAIL = os.getenv('BLUELOG_EMAIL')
-    #BLUELOG_POST_PER_PAGE = 10
-    #BLUELOG_MANAGE_POST_PER_PAGE = 15
-    #BLUELOG_COMMENT_PER_PAGE = 15
-    ## ('theme name', 'display name')
-    #BLUELOG_THEMES = {'perfect_blue': 'Perfect Blue', 'black_swan': 'Black Swan'}
 
     BLOG_SLOW_QUERY_THRESHOLD = 1
 
@@ -45,7 +38,6 @@ class DevelopmentConfig(BaseConfig):
 
 
 class TestingConfig(BaseConfig):
-    TESTING = True
     SQLALCHEMY_DATABASE_URI = os.getenv('TEST_DATABASE_URL')
 
 

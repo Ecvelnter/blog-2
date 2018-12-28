@@ -12,7 +12,6 @@ class MicroblogForm(FlaskForm):
     microblog = TextAreaField('Say something',validators=[DataRequired()])
     submit = SubmitField('Submit')
     
-    
 
 class BlogForm(FlaskForm):
     title = StringField('Title', validators=[DataRequired(), Length(1, 60)])

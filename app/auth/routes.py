@@ -1,7 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-auth/routes用于登录类的路由
-"""
 from flask import render_template,flash,redirect,url_for
 from flask_login import current_user,login_user,logout_user
 
@@ -44,7 +41,6 @@ def register():
         username = form.username.data
         email = form.email.data
         has_categories = False
-        #user = User(username=form.username.data,email=form.email.data,has_categories=False)
         user = User(username=username, email=email, has_categories=has_categories)
         user.set_password(form.password.data)
         db.session.add(user)

@@ -16,7 +16,6 @@ from app.models import User, Blog, Microblog, Category, Link
 from app.config import config
 
 basedir = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
-#basedir = os.path.abspath(os.path.dirname(__file__))
 
 def create_app(config_name=None):
     if config_name is None:
@@ -88,14 +87,6 @@ def register_shell_context(app):
     @app.shell_context_processor
     def make_shell_context():
         return dict(db=db, User=User, Microblog=Microblog, Blog=Blog, Category=Category, Link=Link)
-
-
-#def register_template_context(app):
-#    @app.context_processor
-#    def make_template_context():
-#        categories = Category.query.filter_by(author=current_user).order_by(Category.id).all()
-#        links = Link.query.filter_by(author=current_user).order_by(Link.id).all()
-#        return dict(categories=categories,links=links)
 
 
 def register_request_handlers(app):

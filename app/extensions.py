@@ -11,7 +11,6 @@ from flask_migrate import Migrate
 
 bootstrap = Bootstrap()
 db = SQLAlchemy()
-#login_manager = LoginManager()
 login = LoginManager()
 csrf = CSRFProtect()
 ckeditor = CKEditor()
@@ -21,13 +20,5 @@ toolbar = DebugToolbarExtension()
 migrate = Migrate()
 
 
-#@login.user_loader
-#def load_user(user_id):
-#    from app.models import User
-#    user = User.query.get(int(user_id))
-#    return user
-
-
 login.login_view = 'auth.login'
-#login.login_message = 'Please log in to access this page.'
 login.login_message_category = 'warning'

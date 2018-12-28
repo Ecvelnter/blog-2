@@ -164,14 +164,6 @@ class Category(db.Model):
 
     blogs = db.relationship('Blog', back_populates='category')
 
-    #def delete(self):
-    #    default_category = Category.query.get(1)
-    #    blogs = self.blogs[:]
-    #    for blog in blogs:
-    #        blog.category = default_category
-    #    db.session.delete(self)
-    #    db.session.commit()
-
     def get_author_categories(self):
         return Category.query.filter_by(user_id=self.user_id).order_by(Category.name.desc())
 

@@ -4,7 +4,7 @@ import time
 from datetime import datetime
 from flask import render_template, flash, redirect, url_for, request,current_app,send_from_directory
 from flask_login import current_user, login_required
-from flask_ckeditor import upload_success,upload_fail
+from flask_ckeditor import upload_success, upload_fail
 
 from app.extensions import db
 from app.models import Microblog,Blog,Category
@@ -25,7 +25,6 @@ def before_request():
 @login_required
 def index():
     page = request.args.get('page', 1, type=int)
-    #pagination = Blog.query.filter_by(author=current_user,is_released=True).order_by(Blog.timestamp.desc()).paginate(page, current_app.config['POSTS_PER_PAGE'])
     pagination = current_user.get_releasedblogs().paginate(page, current_app.config['POSTS_PER_PAGE'])
     blogs = pagination.items
     categories = current_user.get_categories()
@@ -98,7 +97,6 @@ def show_blog(blog_id):
 @login_required
 def manage_blog():
     page = request.args.get('page', 1, type=int)
-    #pagination = Blog.query.filter_by(author=current_user).order_by(Blog.timestamp.desc()).paginate(page, current_app.config['POSTS_PER_PAGE'])
     pagination = current_user.get_allblogs().paginate(page, current_app.config['POSTS_PER_PAGE'])
     blogs = pagination.items
     return render_template('blog/manage_blog.html', blogs=blogs, pagination=pagination, page=page)
@@ -149,7 +147,7 @@ def delete_blog(blog_id):
     return redirect_back()
     
 
-@bp.route('/files/<filename>')
+@bp.route('/uploads/<path:filename>')
 def uploaded_files(filename):
     path = current_app.config['UPLOADED_PATH']
     return send_from_directory(path, filename)
@@ -158,18 +156,13 @@ def uploaded_files(filename):
 @bp.route('/upload', methods=['POST'])
 def upload():
     f = request.files.get('upload')
-    #extension = f.filename.split('.')[1].lower()
-    #if extension not in ['jpg', 'gif', 'png', 'jpeg']:
-    #    return upload_fail(message='Image only!')
     if not allowed_file(f.filename):
         return upload_fail('Image only!')
 
-    filename_modified = time.strftime('%Y%m%d%H%M%S',time.localtime()) + '_' + f.filename
-    #f.save(os.path.join(current_app.config['UPLOADED_PATH'], time.strftime('%Y%m%d%H%M%S',time.localtime()) + '_' + f.filename))
-    #url = url_for('main.uploaded_files', filename=time.strftime('%Y%m%d%H%M%S',time.localtime()) + '_' + f.filename)
-    f.save(os.path.join(current_app.config['UPLOADED_PATH'],filename_modified))
-    url = url_for('main.uploaded_files', filename=filename_modified)
-    return upload_success(url,filename_modified)
+    f.filename = time.strftime('%Y%m%d%H%M%S',time.localtime()) + '_' + f.filename
+    f.save(os.path.join(current_app.config['UPLOADED_PATH'],f.filename))
+    url = url_for('main.uploaded_files', filename=f.filename)
+    return upload_success(url,f.filename)
 
 
 @bp.route('/category/<int:category_id>')
@@ -182,6 +175,7 @@ def show_category(category_id):
     categories = category.get_author_categories()
     links = category.get_author_links()
     return render_template('blog/category.html', category=category, blogs=blogs, pagination=pagination, categories=categories, links=links)
+
 
 @bp.route('/category/new', methods=['GET', 'POST'])
 @login_required
