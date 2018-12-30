@@ -30,7 +30,7 @@ def manage_link():
     page = request.args.get('page', 1, type=int)
     pagination = Link.query.filter_by(user_id=current_user.id).order_by(Link.id).paginate(page, current_app.config['POSTS_PER_PAGE'])
     links = pagination.items
-    return render_template('admin/manage_link.html',links=links)
+    return render_template('admin/manage_link.html',links=links, pagination=pagination, page=page)
 
 
 @bp.route('/link/<int:link_id>/edit', methods=['GET', 'POST'])

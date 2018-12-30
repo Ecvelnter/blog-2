@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% from 'bootstrap/form.html' import render_form %}
+{% from 'bootstrap/pagination.html' import render_pagination %}
 
 {% block title %}Manage Links{% endblock %}
 
@@ -39,6 +40,7 @@
                 </tr>
             {% endfor %}
         </table>
+    <div class="page-footer">{{ render_pagination(pagination) }}</div>
     {% else %}
         <div class="tip"><h5>No links yet.</h5></div>
     {% endif %}

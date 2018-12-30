@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% from 'bootstrap/pagination.html' import render_pager %}
+{% from 'bootstrap/pagination.html' import render_pagination %}
 
 
 {% block content %}
@@ -37,7 +37,7 @@
                 {% include 'microblog/_microblog.html'%}
             {% endfor %}
             {% if microblogs %}
-                <div class="page-footer">{{ render_pager(pagination) }}</div>
+                <div class="page-footer">{{ render_pagination(pagination) }}</div>
             {% endif %}
         </div>
     </div>

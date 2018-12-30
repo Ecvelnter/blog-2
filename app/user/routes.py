@@ -25,7 +25,7 @@ def user(username):
     pagination = user.microblogs.order_by(Microblog.timestamp.desc()).paginate(
         page, current_app.config['POSTS_PER_PAGE'])
     microblogs = pagination.items
-    return render_template('user/user.html', user=user, microblogs=microblogs, pagination=pagination)
+    return render_template('user/user.html', user=user, microblogs=microblogs, pagination=pagination, page=page)
 
 
 @bp.route('/user/<username>/blog')
@@ -38,7 +38,7 @@ def user_blog(username):
     blogs = pagination.items
     categories = user.get_categories()
     links = user.get_links()
-    return render_template('user/user_blog.html', user=user, blogs=blogs, pagination=pagination, categories=categories, links=links)
+    return render_template('user/user_blog.html', user=user, blogs=blogs, pagination=pagination, categories=categories, links=links, page=page)
 
 
 @bp.route('/edit_profile', methods=['GET', 'POST'])
@@ -98,7 +98,7 @@ def user_favourited_blog(username):
         pagination = current_user.get_favourited_blogs().paginate(
             page,current_app.config['POSTS_PER_PAGE'])
         blogs = pagination.items
-        return render_template('user/user_favourite_blog.html', user=user, blogs=blogs, pagination=pagination)
+        return render_template('user/user_favourite_blog.html', user=user, blogs=blogs, pagination=pagination, page=page)
     else:
         return render_template('errors/404.html'),404
 

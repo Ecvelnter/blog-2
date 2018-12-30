@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% from 'bootstrap/form.html' import render_form %}
-{% from 'bootstrap/pagination.html' import render_pager %}
+{% from 'bootstrap/pagination.html' import render_pagination %}
 
 {% block title %}Microblog{% endblock %}
 
@@ -18,7 +18,7 @@
     <div class="col-sm-8">
         {% include 'microblog/_microblog.html' %}
         {% if microblogs %}
-            <div class="page-footer">{{ render_pager(pagination) }}</div>
+            <div class="page-footer">{{ render_pagination(pagination) }}</div>
         {% endif %}
     </div>
 {% endblock %}

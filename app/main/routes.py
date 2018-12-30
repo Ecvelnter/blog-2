@@ -29,7 +29,7 @@ def index():
     blogs = pagination.items
     categories = current_user.get_categories()
     links = current_user.get_links()
-    return render_template('index.html', blogs=blogs,categories=categories, links=links, pagination=pagination)
+    return render_template('index.html', blogs=blogs,categories=categories, links=links, pagination=pagination, page=page)
     
 
 @bp.route('/microblog/new',methods=['GET','POST'])
@@ -58,7 +58,7 @@ def explore():
     pagination = Microblog.query.order_by(Microblog.timestamp.desc()).paginate(
         page,current_app.config['POSTS_PER_PAGE'])
     microblogs = pagination.items
-    return render_template('microblog/explore.html', microblogs=microblogs, pagination=pagination)
+    return render_template('microblog/explore.html', microblogs=microblogs, pagination=pagination, page=page)
     
 
 @bp.route('/blog/new',methods=['GET','POST'])
@@ -174,7 +174,7 @@ def show_category(category_id):
     blogs = pagination.items
     categories = category.get_author_categories()
     links = category.get_author_links()
-    return render_template('blog/category.html', category=category, blogs=blogs, pagination=pagination, categories=categories, links=links)
+    return render_template('blog/category.html', category=category, blogs=blogs, pagination=pagination, page=page, categories=categories, links=links)
 
 
 @bp.route('/category/new', methods=['GET', 'POST'])
@@ -201,7 +201,7 @@ def manage_category():
     page = request.args.get('page',1,type=int)
     pagination = Category.query.filter_by(author=current_user).order_by(Category.id).paginate(page, current_app.config['POSTS_PER_PAGE'])
     categories = pagination.items
-    return render_template('blog/manage_category.html',categories=categories, pagination=pagination)
+    return render_template('blog/manage_category.html',categories=categories, pagination=pagination, page=page)
     
 
 @bp.route('/category/<int:category_id>/edit', methods=['GET', 'POST'])

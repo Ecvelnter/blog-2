@@ -16,6 +16,8 @@ class BaseConfig(object):
     CKEDITOR_ENABLE_CODESNIPPET = True
     CKEDITOR_FILE_UPLOADER = 'main.upload'
     CKEDITOR_HEIGHT = 800
+
+
     UPLOADED_PATH = os.path.join(basedir, 'uploads')
     BLOG_ALLOWED_IMAGE_EXTENSIONS = ['png', 'jpg', 'jpeg', 'gif']
 
