@@ -20,7 +20,8 @@
                     <a href="{{ url_for('main.show_category', category_id=category.id) }}">
                         {{ category.name }}
                     </a>
-                    <span class="badge badge-primary badge-pill"> {{ category.get_releasedblogs_count() }}</span>
+                    <span class="badge badge-primary badge-pill">
+                        {{ category.get_releasedblogs_count() }}</span>
                 </li>
             {% endfor %}
         </ul>

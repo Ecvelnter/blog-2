@@ -23,10 +23,16 @@ class BlogForm(FlaskForm):
         super(BlogForm, self).__init__(*args, **kwargs)
         self.category.choices = [(category.id, category.name)
                                  for category in Category.query.filter_by(author=current_user).order_by(Category.name).all()]
-    
+
 
 class CategoryForm(FlaskForm):
     name = StringField('Name', validators=[DataRequired(), Length(1, 30)])
+    submit = SubmitField()
+
+
+class EditCategoryForm(FlaskForm):
+    former_name = StringField('Former Name', validators=[DataRequired(), Length(1, 30)])
+    name = StringField('New Name', validators=[DataRequired(), Length(1, 30)])
     submit = SubmitField()
 
     def validate_name(self, field):

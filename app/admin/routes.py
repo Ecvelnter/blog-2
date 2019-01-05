@@ -5,7 +5,7 @@ from flask_login import login_required,current_user
 from app.extensions import db
 from app.models import Link
 from app.admin import bp
-from app.admin.forms import LinkForm
+from app.admin.forms import LinkForm, EditLinkForm
 
 
 @bp.route('/link/new', methods=['GET', 'POST'])
@@ -36,7 +36,7 @@ def manage_link():
 @bp.route('/link/<int:link_id>/edit', methods=['GET', 'POST'])
 @login_required
 def edit_link(link_id):
-    form = LinkForm()
+    form = EditLinkForm()
     link = Link.query.filter_by(id=link_id,author=current_user).first_or_404()
     if form.validate_on_submit():
         link.name = form.name.data
@@ -44,8 +44,8 @@ def edit_link(link_id):
         db.session.commit()
         flash('Link updated.', 'success')
         return redirect(url_for('admin.manage_link'))
-    form.name.data = link.name
-    form.url.data = link.url
+    form.former_name.data = link.name
+    form.former_url.data = link.url
     return render_template('admin/edit_link.html', form=form)
 
 

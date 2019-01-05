@@ -10,7 +10,7 @@ from app.extensions import db
 from app.models import Microblog,Blog,Category
 from app.utils import redirect_back,allowed_file
 from app.main import bp
-from app.main.forms import MicroblogForm,BlogForm,CategoryForm
+from app.main.forms import MicroblogForm, BlogForm, CategoryForm, EditCategoryForm
 
 
 @bp.before_request
@@ -208,14 +208,14 @@ def manage_category():
 @login_required
 def edit_category(category_id):
     category = Category.query.filter_by(id=category_id,author=current_user).first_or_404()
-    form = CategoryForm()
+    form = EditCategoryForm()
 
     if form.validate_on_submit():
         category.name = form.name.data
         db.session.commit()
         flash('Category updated.', 'success')
         return redirect(url_for('main.manage_category'))
-    form.name.data = category.name
+    form.former_name.data = category.name
     return render_template('blog/edit_category.html', form=form)
 
 

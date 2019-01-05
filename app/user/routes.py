@@ -51,7 +51,7 @@ def edit_profile():
         current_user.about_me = form.about_me.data
         db.session.commit()
         flash('Your changes have been saved.')
-        return redirect(url_for('user.edit_profile'))
+        return redirect(url_for('user.user', username=current_user.username))
     elif request.method == 'GET':
         form.username.data = current_user.username
         form.about_me.data = current_user.about_me
@@ -71,8 +71,8 @@ def follow(username):
     current_user.follow(user)
     db.session.commit()
     flash('You are following {}!'.format(username))
-    return redirect(url_for('user.user', username=username))
-
+    #return redirect(url_for('user.user', username=username))
+    return redirect_back()
 
 @bp.route('/unfollow/<username>', methods=['GET', 'POST'])
 @login_required
@@ -87,7 +87,7 @@ def unfollow(username):
     current_user.unfollow(user)
     db.session.commit()
     flash('You are not following {}.'.format(username))
-    return redirect(url_for('user.user', username=username))
+    return redirect_back()
 
 
 @bp.route('/user/<username>/favourite_blog',methods=['GET','POST'])
@@ -121,3 +121,31 @@ def unfavourite_blog(blog_id):
     db.session.commit()
     flash('Blog disliked.')
     return redirect_back()
+
+
+@bp.route('/user/<username>/followed_list',methods=['GET','POST'])
+@login_required
+def show_followed_list(username):
+    if username == current_user.username:
+        user = current_user
+        page = request.args.get('page',1,type=int)
+        pagination = user.followed.paginate(
+            page,current_app.config['POSTS_PER_PAGE'])
+        followed = pagination.items
+        return render_template('user/user_followed_list.html', user=user, followed=followed, pagination=pagination, page=page)
+    else:
+        return render_template('errors/404.html'),404
+
+
+@bp.route('/user/<username>/follower_list',methods=['GET','POST'])
+@login_required
+def show_follower_list(username):
+    if  username == current_user.username:
+        user = current_user
+        page = request.args.get('page',1,type=int)
+        pagination = user.followers.paginate(
+            page,current_app.config['POSTS_PER_PAGE'])
+        followers = pagination.items
+        return render_template('user/user_follower_list.html', user=user, followers=followers, pagination=pagination, page=page)
+    else:
+        return render_template('errors/404.html'),404
